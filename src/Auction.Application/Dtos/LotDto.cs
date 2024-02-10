@@ -2,7 +2,7 @@
 
 namespace Auction.Application.Dtos;
 
-public record LotDto : EntityDto
+public record LotDto : EntityDto<Guid>
 {
     public required string Title { get; set; }
     public string? Description { get; set; }
