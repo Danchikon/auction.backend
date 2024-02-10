@@ -1,4 +1,5 @@
 using System.Data;
+using Auction.Api.Configurations;
 using Auction.Api.DependencyInjection;
 using Auction.Api.Routes;
 using Auction.Application.DependencyInjection;
@@ -16,6 +17,8 @@ builder.Services.AddInfrastructure();
 builder.Services.AddApi(builder.Environment);
     
 var app = builder.Build();
+
+Mapping.RegisterMappers();
 
 await using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
 var context = serviceScope.ServiceProvider.GetRequiredService<AuctionDbContext>();
@@ -62,5 +65,9 @@ app
 app
     .MapGroup("test")
     .MapTestRoutes();
+
+app
+    .MapGroup("auctions")
+    .MapAuctionsRoutes();
 
 app.Run();

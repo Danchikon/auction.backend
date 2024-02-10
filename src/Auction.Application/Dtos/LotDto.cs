@@ -1,9 +1,8 @@
-using Auction.Domain.Common;
-using Auction.Domain.Enums;
+﻿using Auction.Domain.Enums;
 
-namespace Auction.Domain.Entities;
+namespace Auction.Application.Dtos;
 
-public class LotEntity : Entity<Guid>
+public record LotDto : EntityDto
 {
     public required string Title { get; set; }
     public string? Description { get; set; }
@@ -11,8 +10,5 @@ public class LotEntity : Entity<Guid>
     public required decimal MinPriceStepSize { get; set; }
     public required TimeSpan Duration { get; set; }
     public required LotState State { get; set; }
-    public IEnumerable<BidEntity> Bids { get; set; } = new List<BidEntity>();
-
-    public Guid AuctionId { get; set; }
-    public AuctionEntity Auction { get; set; }
+    public IEnumerable<BidDto> Bids { get; set; }
 }

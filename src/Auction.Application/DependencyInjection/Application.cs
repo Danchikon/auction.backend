@@ -1,6 +1,9 @@
 using System.Reflection;
 using Auction.Application.Common.Mediator.PipelineBehaviours;
 using Auction.Application.Dtos;
+using Auction.Application.Mediator.Commands.Auctions;
+using Auction.Application.Common.Mediator.PipelineBehaviours;
+using Auction.Application.Dtos;
 using Auction.Application.Mediator.Commands.Messages;
 using FastExpressionCompiler;
 using Mapster;
@@ -16,6 +19,9 @@ public static class Application
         {
             mediatRServiceConfiguration.Lifetime = ServiceLifetime.Scoped;
             mediatRServiceConfiguration.AddBehavior<TransactionalPipelineBehaviour<CreateMessageCommand, MessageDto>>();
+
+            mediatRServiceConfiguration.AddBehavior<TransactionalPipelineBehaviour<CreateAuctionCommand, AuctionDto>>();
+            
             mediatRServiceConfiguration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
         
