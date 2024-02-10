@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "oAxxqMSweZK/9C58lPY3VhN6H/LBzwRb5mxa4dbv7iBjC2aKv2yFgIbHvhT2iLJgRxmWrBO4DeDkA6uG0J7K4A==",
+  "dgSpecHash": "tgAGq2wm8+Kwu0ZwnFw39eSj0zw4SA0dlpyStKAPqG5NQK6ZNp2b2WFeeoM4Je06oI013CxfxFONPTvoOr5hxg==",
   "success": true,
-  "projectFilePath": "/home/danchik/Projects/Auction/src/Auction.Domain/Auction.Domain.csproj",
+  "projectFilePath": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Domain\\Auction.Domain.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

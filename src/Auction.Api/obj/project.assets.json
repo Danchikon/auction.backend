@@ -1943,19 +1943,20 @@
     ]
   },
   "packageFolders": {
-    "/home/danchik/.nuget/packages/": {}
+    "C:\\Users\\volodymyr.boichuk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/danchik/Projects/Auction/src/Auction.Api/Auction.Api.csproj",
+      "projectUniqueName": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Api\\Auction.Api.csproj",
       "projectName": "Auction.Api",
-      "projectPath": "/home/danchik/Projects/Auction/src/Auction.Api/Auction.Api.csproj",
-      "packagesPath": "/home/danchik/.nuget/packages/",
-      "outputPath": "/home/danchik/Projects/Auction/src/Auction.Api/obj/",
+      "projectPath": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Api\\Auction.Api.csproj",
+      "packagesPath": "C:\\Users\\volodymyr.boichuk\\.nuget\\packages\\",
+      "outputPath": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/danchik/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\volodymyr.boichuk\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -1967,8 +1968,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/home/danchik/Projects/Auction/src/Auction.Infrastructure/Auction.Infrastructure.csproj": {
-              "projectPath": "/home/danchik/Projects/Auction/src/Auction.Infrastructure/Auction.Infrastructure.csproj"
+            "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Infrastructure\\Auction.Infrastructure.csproj": {
+              "projectPath": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Infrastructure\\Auction.Infrastructure.csproj"
             }
           }
         }
@@ -2011,7 +2012,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -8,19 +8,20 @@
     "net8.0": []
   },
   "packageFolders": {
-    "/home/danchik/.nuget/packages/": {}
+    "C:\\Users\\volodymyr.boichuk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/danchik/Projects/Auction/src/Auction.Domain/Auction.Domain.csproj",
+      "projectUniqueName": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Domain\\Auction.Domain.csproj",
       "projectName": "Auction.Domain",
-      "projectPath": "/home/danchik/Projects/Auction/src/Auction.Domain/Auction.Domain.csproj",
-      "packagesPath": "/home/danchik/.nuget/packages/",
-      "outputPath": "/home/danchik/Projects/Auction/src/Auction.Domain/obj/",
+      "projectPath": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Domain\\Auction.Domain.csproj",
+      "packagesPath": "C:\\Users\\volodymyr.boichuk\\.nuget\\packages\\",
+      "outputPath": "E:\\Software Engineering\\Hackathon Auction\\auction.backend\\src\\Auction.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/danchik/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\volodymyr.boichuk\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -59,7 +60,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
