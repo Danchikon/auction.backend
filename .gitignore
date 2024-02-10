@@ -345,3 +345,4 @@ healthchecksdb
 /Datafeed.Api.004
 
 .history/
+.idea

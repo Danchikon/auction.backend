@@ -4,11 +4,13 @@ using Auction.Domain.Common;
 using Auction.Domain.Entities;
 using Auction.Domain.Enums;
 using Auction.Infrastructure.Implementations;
+using Auction.Infrastructure.Options;
 using Auction.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
@@ -70,9 +72,18 @@ public static class Infrastructure
     
     public static IServiceCollection AddMinioFilesStorage(this IServiceCollection services)
     {
+        services
+            .AddOptions<MinioOptions>()
+            .BindConfiguration(MinioOptions.Section);
+        
         services.AddSingleton<IMinioClient>(provider =>
         {
-            var client = new MinioClient();
+            var minioOptions = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
+            
+            var client = new MinioClient()
+                .WithEndpoint(minioOptions.Endpoint)
+                .WithCredentials(minioOptions.AccessKey,  minioOptions.SecretKey)
+                .Build();
 
             return client;
         });

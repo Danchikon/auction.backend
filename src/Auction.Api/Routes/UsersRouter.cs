@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Auction.Application.Dtos;
 using Auction.Application.Mediator.Commands.Users;
 using Auction.Application.Mediator.Queries.Users;
@@ -11,14 +12,23 @@ public static class UsersRouter
 {
     public static void MapUsersRoutes(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/{id:guid}",async (
-            [FromRoute] Guid id, 
+        endpoints.MapGet("/me",async (
             IMediator mediator, 
+            HttpContext httpContext,
             CancellationToken cancellationToken
             ) =>
         {
-            var query = new GetUserQuery { Id = id };
+            var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (userIdString is null)
+            {
+                return Results.Forbid();
+            }
+
+            var userId = Guid.Parse(userIdString);
+            
+            var query = new GetUserQuery { Id = userId };
+            
             var userDto = await mediator.Send(query, cancellationToken);
             
             return Results.Ok(userDto);
@@ -70,13 +80,22 @@ public static class UsersRouter
             });
         });
         
-        endpoints.MapPost("/{id:guid}/avatar",async (
-            [FromRoute] Guid id, 
+        endpoints.MapPost("/me/avatar",async (
             [FromForm] IFormFile avatar,
             IMediator mediator,   
+            HttpContext httpContext,
             CancellationToken cancellationToken
         ) =>
         {
+            var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdString is null)
+            {
+                return Results.Forbid();
+            }
+
+            var userId = Guid.Parse(userIdString);
+            
             await using var fileStream = avatar.OpenReadStream();
             
             var fileDto = new FileDto
@@ -87,7 +106,7 @@ public static class UsersRouter
             
             var command = new UploadUserAvatarCommand
             {
-                UserId = id,
+                UserId = userId,
                 Avatar = fileDto
             };
 

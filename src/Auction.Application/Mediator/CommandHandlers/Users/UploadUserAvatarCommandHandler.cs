@@ -15,14 +15,14 @@ public class UploadUserAvatarCommandHandler(
     {
         var userEntity = await usersRepository.SingleAsync(user => user.Id == command.UserId, cancellationToken);
         
-        var fileName = Guid.NewGuid().ToString();
-        var fileUri = new Uri($"images/{fileName}");
+        var fileName = userEntity.Id.ToString();
 
-        userEntity.Avatar = fileUri;
-
+        var avatarUri = await filesStorage.UploadAsync(command.Avatar, "avatars", fileName, cancellationToken);
+        
+        userEntity.Avatar = avatarUri;
+        
         await usersRepository.UpdateAsync(userEntity, cancellationToken);
-        await filesStorage.UploadAsync(command.Avatar, "images", fileName, cancellationToken);
 
-        return fileUri;
+        return avatarUri;
     }
 }
