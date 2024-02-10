@@ -19,6 +19,17 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return entry.Entity;
     }
 
+    public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    {
+        await dbContext
+            .Set<TEntity>()
+            .AddRangeAsync(entities, cancellationToken);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return entities;
+    }
+
     public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var entry = dbContext
