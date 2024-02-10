@@ -18,8 +18,6 @@ builder.Services.AddApi(builder.Environment);
     
 var app = builder.Build();
 
-Mapping.RegisterMappers();
-
 await using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
 var context = serviceScope.ServiceProvider.GetRequiredService<AuctionDbContext>();
 
