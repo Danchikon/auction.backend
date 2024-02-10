@@ -27,6 +27,8 @@ public static class Infrastructure
         services.AddScoped<IEventsPublisher, CentrifugoOutboxEventsPublisher<AuctionDbContext>>();
         services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();        
         services.AddScoped<IRepository<MessageEntity>, EfRepository<MessageEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<AuctionEntity>, EfRepository<AuctionEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<LotEntity>, EfRepository<LotEntity, AuctionDbContext>>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddJsonWebTokenService();
