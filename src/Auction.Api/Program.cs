@@ -56,6 +56,10 @@ app
     .MapUsersRoutes();
 
 app
+    .MapGroup("messages")
+    .MapMessagesRoutes();
+
+app
     .MapGroup("test")
     .MapTestRoutes();
 

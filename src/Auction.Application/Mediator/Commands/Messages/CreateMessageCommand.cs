@@ -7,4 +7,5 @@ public record CreateMessageCommand : CommandBase<MessageDto>
 {
     public required string Text { get; init; }
     public required Guid UserId { get; init; }
+    public required Guid AuctionId { get; init; }
 }

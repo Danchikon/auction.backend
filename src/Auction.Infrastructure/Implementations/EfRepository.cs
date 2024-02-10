@@ -29,7 +29,25 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
 
         return entry.Entity;
     }
-    
+
+    public async Task<TDto[]> WhereAsync<TDto>(
+        Expression<Func<TEntity, bool>> filter, 
+        Expression<Func<TEntity, object>> sortBy,
+        int limit,
+        CancellationToken cancellationToken = default
+        )
+    {
+        var dtos = await dbContext
+            .Set<TEntity>()
+            .Where(filter)
+            .Take(limit)
+            .OrderBy(sortBy)
+            .ProjectToType<TDto>()
+            .ToArrayAsync(cancellationToken);
+
+        return dtos;
+    }
+
 
     public async Task<TEntity> SingleAsync(
         Expression<Func<TEntity, bool>> filter,
