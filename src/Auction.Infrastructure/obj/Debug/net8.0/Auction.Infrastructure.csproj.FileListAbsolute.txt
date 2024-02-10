@@ -1,0 +1,17 @@
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Infrastructure.deps.json
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Infrastructure.dll
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Infrastructure.pdb
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Application.dll
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Domain.dll
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Application.pdb
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/bin/Debug/net8.0/Auction.Domain.pdb
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.csproj.AssemblyReference.cache
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.AssemblyInfoInputs.cache
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.AssemblyInfo.cs
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.csproj.CoreCompileInputs.cache
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.csproj.CopyComplete
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.dll
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/refint/Auction.Infrastructure.dll
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/Auction.Infrastructure.pdb
+/home/danchik/Projects/Auction/src/Auction.Infrastructure/obj/Debug/net8.0/ref/Auction.Infrastructure.dll
