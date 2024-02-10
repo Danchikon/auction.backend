@@ -10,7 +10,7 @@ public class LotEntityTypeConfiguration : IEntityTypeConfiguration<LotEntity>
     {
         builder
             .Property(lot => lot.State)
-            .HasColumnType("lon_state");
+            .HasColumnType("lot_state");
         
         builder
             .HasIndex(lot => lot.State)

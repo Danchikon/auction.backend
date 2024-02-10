@@ -1,6 +1,7 @@
 using System.Reflection;
 using Auction.Domain.Entities;
 using Auction.Domain.Enums;
+using Auction.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auction.Infrastructure.Persistence;
@@ -11,6 +12,8 @@ public class AuctionDbContext : DbContext
     public required DbSet<AuctionEntity> Auctions { get; init; }
     public required DbSet<LotEntity> Lots { get; init; }
     public required DbSet<BidEntity> Bids { get; init; }
+    public required DbSet<MessageEntity> Messages { get; init; }
+    public required DbSet<CentrifugoOutboxEntity> CentrifugoOutboxs { get; init; }
     
     public AuctionDbContext(DbContextOptions<AuctionDbContext> options) : base(options)
     {

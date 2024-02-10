@@ -21,8 +21,10 @@ public static class Infrastructure
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddMinioFilesStorage();
-        
+
+        services.AddScoped<IEventsPublisher, CentrifugoOutboxEventsPublisher<AuctionDbContext>>();
         services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<MessageEntity>, EfRepository<MessageEntity, AuctionDbContext>>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddJsonWebTokenService();
@@ -33,7 +35,7 @@ public static class Infrastructure
             dataSourceBuilderConfigurator.MapEnum<LotState>();
         });
         
-        services.AddEf<AuctionDbContext>();
+        services.AddEfPostgres<AuctionDbContext>();
         
         services.AddEfUnitOfWork<AuctionDbContext>();
         
@@ -75,6 +77,24 @@ public static class Infrastructure
             return client;
         });
         services.AddSingleton<IFilesStorage, MinioFilesStorage>();
+
+        return services;
+    }
+    
+    public static IServiceCollection AddEfPostgres<TDbContext>(this IServiceCollection services) where TDbContext : DbContext
+    {
+        const string postgresMigrationsTableName = "ef_migrations";
+        
+        services.AddEf<TDbContext>((provider, dbContextOptionsBuilder) =>
+        {
+            var dataSourceBuilder = provider.GetRequiredService<NpgsqlDataSource>();
+            
+            dbContextOptionsBuilder.UseNpgsql(dataSourceBuilder, npgsqlDbContextOptionsBuilder =>
+            {
+                npgsqlDbContextOptionsBuilder.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+                npgsqlDbContextOptionsBuilder.MigrationsHistoryTable(postgresMigrationsTableName);
+            });
+        });
 
         return services;
     }
