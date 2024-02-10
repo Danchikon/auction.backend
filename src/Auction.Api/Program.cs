@@ -1,4 +1,5 @@
 using System.Data;
+using Auction.Api.DependencyInjection;
 using Auction.Api.Configurations;
 using Auction.Api.Routes;
 using Auction.Application.DependencyInjection;
@@ -6,17 +7,14 @@ using Auction.Infrastructure.DependencyInjection;
 using Auction.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Serilog;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
+builder.Host.ConfigureSerilog();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-}
+builder.Services.AddApi(builder.Environment);
     
 var app = builder.Build();
 
@@ -45,11 +43,16 @@ if (context.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
 
 }
 
+app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app
     .MapGroup("users")

@@ -4,11 +4,13 @@ using Auction.Domain.Common;
 using Auction.Domain.Entities;
 using Auction.Domain.Enums;
 using Auction.Infrastructure.Implementations;
+using Auction.Infrastructure.Options;
 using Auction.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
@@ -23,16 +25,16 @@ public static class Infrastructure
         services.AddMinioFilesStorage();
 
         services.AddScoped<IEventsPublisher, CentrifugoOutboxEventsPublisher<AuctionDbContext>>();
-        services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();        
         services.AddScoped<IRepository<MessageEntity>, EfRepository<MessageEntity, AuctionDbContext>>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddJsonWebTokenService();
-        
+                                     
         services.AddPostgresDataSource(dataSourceBuilderConfigurator =>
         {
             dataSourceBuilderConfigurator.MapEnum<AuctionState>();
-            dataSourceBuilderConfigurator.MapEnum<LotState>();
+            dataSourceBuilderConfigurator.MapEnum<LotState>();                              
         });
         
         services.AddEfPostgres<AuctionDbContext>();
@@ -46,7 +48,7 @@ public static class Infrastructure
     {
         services.AddSingleton<SigningCredentials>(provider =>
         {
-            var jsonWebKey = new JsonWebKey("{\n    \"crv\": \"P-256\",\n    \"d\": \"ZCtgeVE8U8ibn5og-_EyiRk6eL_A8oAvUN3rDKnoonc\",\n    \"ext\": true,\n    \"key_ops\": [\n        \"sign\"\n    ],\n    \"kid\": \"Jg6oavi-MFt0LRYcRgkC3WVZdDaec1FxMUwQrQJBoH0\",\n    \"kty\": \"EC\",\n    \"x\": \"8bBX1NIdCjaM9I7q85kPxDnDG2V1tlucn7zyRC5mmio\",\n    \"y\": \"2m4Uc0O5iOyaD0kVvRP0QvXWLxm1nHwgMFtpu8AyGiA\"\n}");
+            var jsonWebKey = new JsonWebKey("{\n    \"crv\": \"P-256\",\n    \"d\": \"4jUUtEizHhny1QOMp030Oed4BwIyMLRaQAMloJ4_Fa8\",\n    \"ext\": true,\n    \"key_ops\": [\n        \"sign\"\n    ],\n    \"kid\": \"5LICTzyWHEP9Op58queF3EsbvxuL6vuvmwuamOzPD_A\",\n    \"kty\": \"EC\",\n    \"x\": \"MaiR_PVaV-EYlhQcBdA6dVqnlRGMXUihqZ-rEjQAq18\",\n    \"y\": \"o3M5JCV4xkUzzyfmhjqHTpoY09SEcZyzoa4f0MB_380\"\n}");
             
             var signingCredentials = new SigningCredentials(jsonWebKey, SecurityAlgorithms.EcdsaSha256);
 
@@ -57,7 +59,7 @@ public static class Infrastructure
         {
             var tokenHandler = new JsonWebTokenHandler
             {
-                TokenLifetimeInMinutes = TimeSpan.FromDays(30).Minutes
+                TokenLifetimeInMinutes = Convert.ToInt32(TimeSpan.FromDays(30).TotalMinutes)
             };
 
             return tokenHandler;
@@ -70,9 +72,18 @@ public static class Infrastructure
     
     public static IServiceCollection AddMinioFilesStorage(this IServiceCollection services)
     {
+        services
+            .AddOptions<MinioOptions>()
+            .BindConfiguration(MinioOptions.Section);
+        
         services.AddSingleton<IMinioClient>(provider =>
         {
-            var client = new MinioClient();
+            var minioOptions = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
+            
+            var client = new MinioClient()
+                .WithEndpoint(minioOptions.Endpoint)
+                .WithCredentials(minioOptions.AccessKey,  minioOptions.SecretKey)
+                .Build();
 
             return client;
         });
