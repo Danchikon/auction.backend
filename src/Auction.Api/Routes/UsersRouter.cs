@@ -22,9 +22,9 @@ public static class UsersRouter
             var userDto = await mediator.Send(query, cancellationToken);
             
             return Results.Ok(userDto);
-        });
+        }).RequireAuthorization();
         
-        endpoints.MapPost("/",async (
+        endpoints.MapPost("/sign-up",async (
             [FromBody] CreateUserCommand command,
             IMediator mediator, 
             JsonWebTokenService jsonWebTokenService,
@@ -33,11 +33,39 @@ public static class UsersRouter
         {
             var userDto = await mediator.Send(command, cancellationToken);
 
-            var token = jsonWebTokenService.Create();
+            var token = jsonWebTokenService.Create(new Dictionary<string, object>
+            {
+                ["sub"] =  userDto.Id
+            });
             
             return Results.Ok(new
             {
                 User = userDto,
+                AccessToken = token
+            });
+        });
+        
+        endpoints.MapPost("/sign-in",async (
+            [FromBody] CheckUserPasswordQuery query,
+            IMediator mediator, 
+            JsonWebTokenService jsonWebTokenService,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var userId = await mediator.Send(query, cancellationToken);
+
+            if (userId is null)
+            {
+                return Results.Unauthorized();
+            }
+            
+            var token = jsonWebTokenService.Create(new Dictionary<string, object>
+            {
+                ["sub"] =  userId
+            });
+            
+            return Results.Ok(new
+            {
                 AccessToken = token
             });
         });
@@ -67,6 +95,7 @@ public static class UsersRouter
             
             return Results.Ok(uri);
         })
-        .DisableAntiforgery();
+        .DisableAntiforgery()
+        .RequireAuthorization();
     }
 }

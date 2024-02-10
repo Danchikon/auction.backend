@@ -1,6 +1,6 @@
 namespace Auction.Application.Dtos;
 
-public record UserDto : EntityDto
+public record UserDto : EntityDto<Guid>
 {
     public required string FullName { get; init; }
     public required string Email { get; init; }

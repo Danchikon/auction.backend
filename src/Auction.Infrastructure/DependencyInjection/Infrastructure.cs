@@ -23,16 +23,16 @@ public static class Infrastructure
         services.AddMinioFilesStorage();
 
         services.AddScoped<IEventsPublisher, CentrifugoOutboxEventsPublisher<AuctionDbContext>>();
-        services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();        
         services.AddScoped<IRepository<MessageEntity>, EfRepository<MessageEntity, AuctionDbContext>>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddJsonWebTokenService();
-        
+                                     
         services.AddPostgresDataSource(dataSourceBuilderConfigurator =>
         {
             dataSourceBuilderConfigurator.MapEnum<AuctionState>();
-            dataSourceBuilderConfigurator.MapEnum<LotState>();
+            dataSourceBuilderConfigurator.MapEnum<LotState>();                              
         });
         
         services.AddEfPostgres<AuctionDbContext>();
@@ -46,7 +46,7 @@ public static class Infrastructure
     {
         services.AddSingleton<SigningCredentials>(provider =>
         {
-            var jsonWebKey = new JsonWebKey("{\n    \"crv\": \"P-256\",\n    \"d\": \"ZCtgeVE8U8ibn5og-_EyiRk6eL_A8oAvUN3rDKnoonc\",\n    \"ext\": true,\n    \"key_ops\": [\n        \"sign\"\n    ],\n    \"kid\": \"Jg6oavi-MFt0LRYcRgkC3WVZdDaec1FxMUwQrQJBoH0\",\n    \"kty\": \"EC\",\n    \"x\": \"8bBX1NIdCjaM9I7q85kPxDnDG2V1tlucn7zyRC5mmio\",\n    \"y\": \"2m4Uc0O5iOyaD0kVvRP0QvXWLxm1nHwgMFtpu8AyGiA\"\n}");
+            var jsonWebKey = new JsonWebKey("{\n    \"crv\": \"P-256\",\n    \"d\": \"4jUUtEizHhny1QOMp030Oed4BwIyMLRaQAMloJ4_Fa8\",\n    \"ext\": true,\n    \"key_ops\": [\n        \"sign\"\n    ],\n    \"kid\": \"5LICTzyWHEP9Op58queF3EsbvxuL6vuvmwuamOzPD_A\",\n    \"kty\": \"EC\",\n    \"x\": \"MaiR_PVaV-EYlhQcBdA6dVqnlRGMXUihqZ-rEjQAq18\",\n    \"y\": \"o3M5JCV4xkUzzyfmhjqHTpoY09SEcZyzoa4f0MB_380\"\n}");
             
             var signingCredentials = new SigningCredentials(jsonWebKey, SecurityAlgorithms.EcdsaSha256);
 
@@ -57,7 +57,7 @@ public static class Infrastructure
         {
             var tokenHandler = new JsonWebTokenHandler
             {
-                TokenLifetimeInMinutes = TimeSpan.FromDays(30).Minutes
+                TokenLifetimeInMinutes = Convert.ToInt32(TimeSpan.FromDays(30).TotalMinutes)
             };
 
             return tokenHandler;

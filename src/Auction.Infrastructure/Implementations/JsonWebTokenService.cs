@@ -8,14 +8,17 @@ public class JsonWebTokenService(
     SigningCredentials signingCredentials
     )
 {
-    public string Create()
+    public string Create(Dictionary<string, object>? claims = null)
     {
         var issuedAt = DateTime.UtcNow;
         
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             IssuedAt = issuedAt,
-            SigningCredentials = signingCredentials
+            Issuer = "auction",
+            Audience = "auction",
+            SigningCredentials = signingCredentials,
+            Claims = claims
         };
 
         return tokenHandler.CreateToken(tokenDescriptor);
