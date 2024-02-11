@@ -52,19 +52,21 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app
+var apiGroup = app.MapGroup("api");
+
+apiGroup
     .MapGroup("users")
     .MapUsersRoutes();
 
-app
+apiGroup
     .MapGroup("messages")
     .MapMessagesRoutes();
 
-app
+apiGroup
     .MapGroup("test")
     .MapTestRoutes();
 
-app
+apiGroup
     .MapGroup("auctions")
     .MapAuctionsRoutes();
 
