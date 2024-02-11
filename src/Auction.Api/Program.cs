@@ -4,6 +4,7 @@ using Auction.Api.DependencyInjection;
 using Auction.Api.Routes;
 using Auction.Application.DependencyInjection;
 using Auction.Infrastructure.DependencyInjection;
+using Auction.Infrastructure.Options;
 using Auction.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -48,12 +49,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(swaggerUiOptions =>
     {
-        var prefix = app.Configuration.GetSection("Swagger").GetValue<string>("RoutePrefix");
-        var swaggerEndpoint = string.IsNullOrEmpty(prefix)
-            ? "/swagger/v1/swagger.json"
-            : $"/{prefix}/swagger/v1/swagger.json";
+        var swaggerOptions = app.Configuration
+            .GetSection(SwaggerOptions.Section)
+            .Get<SwaggerOptions>()!;
+
+        swaggerUiOptions.RoutePrefix = swaggerOptions.RoutePrefix;
         
-        swaggerUiOptions.SwaggerEndpoint(swaggerEndpoint, string.Empty);
+        foreach (var swaggerEndpoint in swaggerOptions.Endpoints)
+        {
+            swaggerUiOptions.SwaggerEndpoint(swaggerEndpoint.Url, swaggerEndpoint.Name);
+        }
     });
 }
 
