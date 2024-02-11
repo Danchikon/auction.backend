@@ -10,10 +10,10 @@ public static class LotsRouter
 {
     public static void MapLotsRoutes(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/{id}/avatar",async (
+        endpoints.MapPost("/{id}/avatar", async (
                 [FromForm] IFormFile avatar,
                 Guid id,
-                IMediator mediator,   
+                IMediator mediator,
                 HttpContext httpContext,
                 CancellationToken cancellationToken
             ) =>
@@ -24,15 +24,15 @@ public static class LotsRouter
                 {
                     return Results.Forbid();
                 }
-                
+
                 await using var fileStream = avatar.OpenReadStream();
-            
+
                 var fileDto = new FileDto
                 {
                     Stream = fileStream,
                     ContentType = avatar.ContentType
                 };
-            
+
                 var command = new UploadLotAvatarCommand
                 {
                     LotId = id,
@@ -40,10 +40,9 @@ public static class LotsRouter
                 };
 
                 var uri = await mediator.Send(command, cancellationToken);
-            
+
                 return Results.Ok(uri);
             })
-            .DisableAntiforgery()
-            .RequireAuthorization();
+            .DisableAntiforgery();
     }
 }

@@ -41,49 +41,47 @@ public static class AuctionsRouter
             
             return Results.Ok(auctionDto); 
         }).RequireAuthorization();
-        
+
         endpoints.MapGet("/{id:guid}", async (
-                [FromRoute] Guid id,
-                IMediator mediator, 
-                CancellationToken cancellationToken
-                ) => 
+            [FromRoute] Guid id,
+            IMediator mediator,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var query = new GetAuctionQuery
             {
-                var query = new GetAuctionQuery
-                {
-                    Id = id
-                };
-                
-                var auctionDto = await mediator.Send(query, cancellationToken);
-            
-                return Results.Ok(auctionDto); 
-            })
-            .RequireAuthorization();
-        
-        endpoints.MapGet("/",async (
-                [FromQuery] AuctionState? state,
-                [FromQuery] string? title,
-                [FromQuery] int? page,
-                [FromQuery] int? pageSize,
-                IMediator mediator, 
-                CancellationToken cancellationToken
-            ) =>
+                Id = id
+            };
+
+            var auctionDto = await mediator.Send(query, cancellationToken);
+
+            return Results.Ok(auctionDto);
+        });
+
+        endpoints.MapGet("/", async (
+            [FromQuery] AuctionState? state,
+            [FromQuery] string? title,
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            IMediator mediator,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var query = new GetAuctionsQuery
             {
-                var query = new GetAuctionsQuery
+                State = state,
+                Title = title,
+                Pagination = new PaginationOptions
                 {
-                    State = state,
-                    Title = title,
-                    Pagination = new PaginationOptions
-                    {
-                        Page = page ?? PaginationOptions.DefaultPage,
-                        PageSize = pageSize ?? PaginationOptions.DefaultPageSize
-                    }
-                };
-                
-                var auctionsDtos = await mediator.Send(query, cancellationToken);
-            
-                return Results.Ok(auctionsDtos);
-            })
-            .RequireAuthorization();
+                    Page = page ?? PaginationOptions.DefaultPage,
+                    PageSize = pageSize ?? PaginationOptions.DefaultPageSize
+                }
+            };
+
+            var auctionsDtos = await mediator.Send(query, cancellationToken);
+
+            return Results.Ok(auctionsDtos);
+        });
         
         endpoints.MapPatch("/{id}",async (
                 [FromBody] UpdateAuctionCommand command,

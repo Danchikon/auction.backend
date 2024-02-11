@@ -25,7 +25,7 @@ public static class MessagesRouter
             var messagesDtos = await mediator.Send(query, cancellationToken);
             
             return Results.Ok(messagesDtos);
-        }).RequireAuthorization();
+        });
         
         endpoints.MapPost("/",async (
             [FromBody] CreateMessageDto dto,

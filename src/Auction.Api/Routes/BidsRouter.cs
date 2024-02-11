@@ -14,31 +14,30 @@ public static class BidsRouter
 {
     public static void MapBidsRoutes(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/",async (
-                [FromQuery] Guid? lotId,
-                [FromQuery] Guid? userId,
-                [FromQuery] int? page,
-                [FromQuery] int? pageSize,
-                IMediator mediator, 
-                CancellationToken cancellationToken
-            ) =>
+        endpoints.MapGet("/", async (
+            [FromQuery] Guid? lotId,
+            [FromQuery] Guid? userId,
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            IMediator mediator,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var query = new GetBidsQuery
             {
-                var query = new GetBidsQuery
+                LotId = lotId,
+                UserId = userId,
+                Pagination = new PaginationOptions
                 {
-                    LotId = lotId,
-                    UserId = userId,
-                    Pagination = new PaginationOptions
-                    {
-                        Page = page ?? PaginationOptions.DefaultPage,
-                        PageSize = pageSize ?? PaginationOptions.DefaultPageSize
-                    }
-                };
-                
-                var bidsDtos = await mediator.Send(query, cancellationToken);
-            
-                return Results.Ok(bidsDtos);
-            })
-            .RequireAuthorization();
+                    Page = page ?? PaginationOptions.DefaultPage,
+                    PageSize = pageSize ?? PaginationOptions.DefaultPageSize
+                }
+            };
+
+            var bidsDtos = await mediator.Send(query, cancellationToken);
+
+            return Results.Ok(bidsDtos);
+        });
         
         endpoints.MapPost("/",async (
                 [FromBody] CreateBidDto dto,
