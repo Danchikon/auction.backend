@@ -62,20 +62,21 @@ public static class UsersRouter
             CancellationToken cancellationToken
         ) =>
         {
-            var userId = await mediator.Send(query, cancellationToken);
+            var userDto = await mediator.Send(query, cancellationToken);
 
-            if (userId is null)
+            if (userDto is null)
             {
                 return Results.Unauthorized();
             }
             
             var token = jsonWebTokenService.Create(new Dictionary<string, object>
             {
-                ["sub"] =  userId
+                ["sub"] =  userDto.Id
             });
             
             return Results.Ok(new
             {
+                User = userDto,
                 AccessToken = token
             });
         });
