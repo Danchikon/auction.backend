@@ -12,7 +12,7 @@ public class PasswordHasher : IPasswordHasher
         
         var hashBytes = SHA256.HashData(bytes);
 
-        var hash = Encoding.UTF8.GetString(hashBytes);
+        var hash = Convert.ToBase64String(hashBytes);
 
         return hash;
     }

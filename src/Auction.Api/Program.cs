@@ -14,7 +14,7 @@ var builder = WebApplication.CreateSlimBuilder(args);
 builder.Host.ConfigureSerilog();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
-builder.Services.AddApi(builder.Environment);
+builder.Services.AddApi(builder.Environment, builder.Configuration);
     
 var app = builder.Build();
 

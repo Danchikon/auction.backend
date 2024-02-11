@@ -26,7 +26,7 @@ public static class Infrastructure
 
         services.AddScoped<IEventsPublisher, CentrifugoOutboxEventsPublisher<AuctionDbContext>>();
         services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();        
-        services.AddScoped<IRepository<MessageEntity>, EfRepository<MessageEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<MessageEntity>, EfMessagesRepository>();
         services.AddScoped<IRepository<AuctionEntity>, EfRepository<AuctionEntity, AuctionDbContext>>();
         services.AddScoped<IRepository<LotEntity>, EfRepository<LotEntity, AuctionDbContext>>();
 
@@ -48,9 +48,24 @@ public static class Infrastructure
     
     public static IServiceCollection AddJsonWebTokenService(this IServiceCollection services)
     {
+        services
+            .AddOptions<JsonWebTokenOptions>()
+            .BindConfiguration(JsonWebTokenOptions.Section);
+
+        services.AddSingleton<JsonWebKey>(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<JsonWebTokenOptions>>().Value;
+
+            var json = File.ReadAllText(options.JsonWebKey);
+            
+            var jsonWebKey = new JsonWebKey(json);
+
+            return jsonWebKey;
+        });
+        
         services.AddSingleton<SigningCredentials>(provider =>
         {
-            var jsonWebKey = new JsonWebKey("{\n    \"crv\": \"P-256\",\n    \"d\": \"4jUUtEizHhny1QOMp030Oed4BwIyMLRaQAMloJ4_Fa8\",\n    \"ext\": true,\n    \"key_ops\": [\n        \"sign\"\n    ],\n    \"kid\": \"5LICTzyWHEP9Op58queF3EsbvxuL6vuvmwuamOzPD_A\",\n    \"kty\": \"EC\",\n    \"x\": \"MaiR_PVaV-EYlhQcBdA6dVqnlRGMXUihqZ-rEjQAq18\",\n    \"y\": \"o3M5JCV4xkUzzyfmhjqHTpoY09SEcZyzoa4f0MB_380\"\n}");
+            var jsonWebKey = provider.GetRequiredService<JsonWebKey>();
             
             var signingCredentials = new SigningCredentials(jsonWebKey, SecurityAlgorithms.EcdsaSha256);
 

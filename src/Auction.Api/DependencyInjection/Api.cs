@@ -1,3 +1,4 @@
+using Auction.Infrastructure.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -5,7 +6,7 @@ namespace Auction.Api.DependencyInjection;
 
 public static class Api
 {
-    public static IServiceCollection AddApi(this IServiceCollection services, IWebHostEnvironment environment)
+    public static IServiceCollection AddApi(this IServiceCollection services, IWebHostEnvironment environment, IConfiguration configuration)
     {
         if (environment.IsDevelopment())
         {
@@ -34,11 +35,15 @@ public static class Api
             });
         }
 
+        using var serviceProvider = services.BuildServiceProvider();
+
+        var jsonWebKey = serviceProvider.GetRequiredService<JsonWebKey>();
+
         services
             .AddAuthentication()
             .AddJwtBearer(jwtBearerOptions =>
             {
-                jwtBearerOptions.TokenValidationParameters.IssuerSigningKey = new JsonWebKey("{\n    \"crv\": \"P-256\",\n    \"ext\": true,\n    \"key_ops\": [\n        \"verify\"\n    ],\n    \"kid\": \"5LICTzyWHEP9Op58queF3EsbvxuL6vuvmwuamOzPD_A\",\n    \"kty\": \"EC\",\n    \"x\": \"MaiR_PVaV-EYlhQcBdA6dVqnlRGMXUihqZ-rEjQAq18\",\n    \"y\": \"o3M5JCV4xkUzzyfmhjqHTpoY09SEcZyzoa4f0MB_380\"\n}");
+                jwtBearerOptions.TokenValidationParameters.IssuerSigningKey = jsonWebKey;
                 jwtBearerOptions.TokenValidationParameters.ValidIssuer = "auction";
                 jwtBearerOptions.TokenValidationParameters.ValidAudience = "auction";
                 jwtBearerOptions.RequireHttpsMetadata = false;

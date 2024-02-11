@@ -8,18 +8,18 @@ namespace Auction.Infrastructure.Implementations;
 
 public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IRepository<TEntity> where TDbContext: DbContext where TEntity : class
 {
-    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var entry = await dbContext
             .Set<TEntity>()
             .AddAsync(entity, cancellationToken);
-
+        
         await dbContext.SaveChangesAsync(cancellationToken);
         
         return entry.Entity;
     }
 
-    public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await dbContext
             .Set<TEntity>()
@@ -30,7 +30,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return entities;
     }
 
-    public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var entry = dbContext
             .Set<TEntity>()
@@ -41,7 +41,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return entry.Entity;
     }
 
-    public async Task<TDto[]> WhereAsync<TDto>(
+    public virtual async Task<TDto[]> WhereAsync<TDto>(
         Expression<Func<TEntity, bool>> filter, 
         Expression<Func<TEntity, object>> sortBy,
         int limit,
@@ -51,8 +51,8 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         var dtos = await dbContext
             .Set<TEntity>()
             .Where(filter)
+            .OrderByDescending(sortBy)
             .Take(limit)
-            .OrderBy(sortBy)
             .ProjectToType<TDto>()
             .ToArrayAsync(cancellationToken);
 
@@ -60,7 +60,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
     }
 
 
-    public async Task<TEntity> SingleAsync(
+    public virtual async Task<TEntity> SingleAsync(
         Expression<Func<TEntity, bool>> filter,
         CancellationToken cancellationToken = default
         )
@@ -77,7 +77,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return entity;
     }
 
-    public async Task<TDto> SingleAsync<TDto>(
+    public virtual async Task<TDto> SingleAsync<TDto>(
         Expression<Func<TEntity, bool>> filter, 
         CancellationToken cancellationToken = default
         )
