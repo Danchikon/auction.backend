@@ -5,7 +5,7 @@ namespace Auction.Application.Common.Mediator.PipelineBehaviours;
 
 public class TransactionalPipelineBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork)
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+    where TRequest : IBaseRequest
 {
     public async Task<TResponse> Handle(
         TRequest request, 
@@ -30,3 +30,4 @@ public class TransactionalPipelineBehaviour<TRequest, TResponse>(IUnitOfWork uni
         }
     }
 }
+

@@ -10,7 +10,7 @@ public class UploadLotAvatarCommandHandler(IRepository<LotEntity> lotRepository,
 {
     public override async Task<Uri> Handle(UploadLotAvatarCommand command, CancellationToken cancellationToken = default)
     {
-        var lot = await lotRepository.SingleAsync(auction => auction.Id == command.LotId);
+        var lot = await lotRepository.SingleAsync(auction => auction.Id == command.LotId, cancellationToken);
 
         var avatarUri = await filesStorage.UploadAsync(command.Avatar, "avatars", lot.Id.ToString(), cancellationToken);
         lot.Avatar = avatarUri;

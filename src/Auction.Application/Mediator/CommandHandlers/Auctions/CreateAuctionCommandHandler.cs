@@ -10,63 +10,62 @@ using MapsterMapper;
 namespace Auction.Application.Mediator.CommandHandlers.Auctions;
 
 public class CreateAuctionCommandHandler(
-    IMapper maper, 
-    IRepository<AuctionEntity> auctionRepository,
-    IRepository<LotEntity> lotepository,
-    IFilesStorage filesStorage
+    IMapper mapper, 
+    IRepository<AuctionEntity> auctionsRepository,
+    ILotJobsScheduler lotJobsScheduler
     )
-    : CommandHandlerBase<ExtendedCreateAuctionCommand, AuctionDto>
+    : CommandHandlerBase<CreateAuctionCommand, AuctionDto>
 {
-    public override async Task<AuctionDto> Handle(ExtendedCreateAuctionCommand command, CancellationToken cancellationToken = default)
+    public override async Task<AuctionDto> Handle(CreateAuctionCommand command, CancellationToken cancellationToken = default)
     {
-        var auctionEntityId = Guid.NewGuid();
-        var fileName = auctionEntityId.ToString();
+        var auctionId = Guid.NewGuid();
         
-        var avatarUri = await filesStorage.UploadAsync(command.Avatar, "avatars", fileName, cancellationToken);
+        var lots = command.Lots.Select(createLotCommand => new LotEntity
+        {
+            Id = Guid.NewGuid(),
+            Title = createLotCommand.Title,
+            Description = createLotCommand.Description,
+            StartPrice = createLotCommand.StartPrice,
+            MinPriceStepSize = createLotCommand.MinPriceStepSize,
+            OpensAt = createLotCommand.OpensAt,
+            ClosesAt = createLotCommand.ClosesAt,
+            State = LotState.Scheduled,
+            CreatedAt = DateTimeOffset.UtcNow,
+            AuctionId = auctionId
+        }).ToList();
 
-        var createdLots = Enumerable.Empty<LotEntity>();
+        var auctionOpensAt = lots
+            .Select(lot => lot.OpensAt)
+            .Order()
+            .First();
+        
+        var auctionClosesAt = lots
+            .Select(lot => lot.ClosesAt)
+            .OrderDescending()
+            .First();
         
         var auctionEntity = new AuctionEntity
         {
-            Id = Guid.NewGuid(),
+            Id = auctionId,
             Title = command.Title,
             Description = command.Description,
-            State = command.IsScheduled ? AuctionState.Scheduled : AuctionState.Opened,
+            State = AuctionState.Scheduled,
             CreatedAt = DateTimeOffset.UtcNow,
-            ClosedAt = command.ClosedAt,
-            OpensAt = command.OpensAt,
-            OpenedAt = command.OpenedAt,
+            OpensAt = auctionOpensAt,
+            ClosesAt = auctionClosesAt,
             UserId = command.UserId,
-            Avatar = avatarUri
+            Lots = lots
         };
         
-        var createdAuction = await auctionRepository.AddAsync(auctionEntity, cancellationToken);
-
-        if (command.Lots is not null && command.Lots.Any())
+        var createdAuction = await auctionsRepository.AddAsync(auctionEntity, cancellationToken);
+        
+        foreach (var lotEntity in createdAuction.Lots)
         {
-            var lotState = command.IsScheduled ? LotState.Waiting : LotState.InSale;
-                
-            var lots = command.Lots.Select(lot => new LotEntity
-            {
-                Id = Guid.NewGuid(),
-                Title = lot.Title,
-                Description = lot.Description,
-                StartPrice = lot.StartPrice,
-                MinPriceStepSize = lot.MinPriceStepSize,
-                Duration = lot.Duration,
-                State = lotState,
-                CreatedAt = DateTimeOffset.UtcNow,
-                AuctionId = createdAuction.Id
-            });
-            createdLots = await lotepository.AddRangeAsync(lots, cancellationToken);
+            await lotJobsScheduler.ScheduleOpenLotAsync(lotEntity.Id, lotEntity.OpensAt);
+            await lotJobsScheduler.ScheduleCloseLotAsync(lotEntity.Id, lotEntity.ClosesAt);
         }
 
-        var auctionDto = maper.Map<AuctionDto>(createdAuction);
-
-        if (createdLots.Any())
-        {
-            auctionDto.Lots =  maper.Map<IEnumerable<LotDto>>(createdLots);
-        }
+        var auctionDto = mapper.Map<AuctionDto>(createdAuction);
         
         return auctionDto;
     }

@@ -1,6 +1,7 @@
 using System.Data;
 using Auction.Api.Configurations;
 using Auction.Api.DependencyInjection;
+using Auction.Api.Middlewares;
 using Auction.Api.Routes;
 using Auction.Application.DependencyInjection;
 using Auction.Infrastructure.DependencyInjection;
@@ -10,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
 
-var builder = WebApplication.CreateSlimBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureSerilog();
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApi(builder.Environment, builder.Configuration);
     
 var app = builder.Build();
@@ -43,6 +44,8 @@ if (context.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
 }
 
 app.UseSerilogRequestLogging();
+
+app.UseMiddleware<ExceptionalMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -74,12 +77,12 @@ apiGroup
     .MapUsersRoutes();
 
 apiGroup
-    .MapGroup("messages")
-    .MapMessagesRoutes();
+    .MapGroup("bids")
+    .MapBidsRoutes();
 
 apiGroup
-    .MapGroup("test")
-    .MapTestRoutes();
+    .MapGroup("messages")
+    .MapMessagesRoutes();
 
 apiGroup
     .MapGroup("auctions")

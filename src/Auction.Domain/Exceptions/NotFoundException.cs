@@ -1,4 +1,5 @@
 using Auction.Domain.Common;
+using Auction.Domain.Common.Errors;
 
 namespace Auction.Domain.Exceptions;
 
@@ -10,6 +11,9 @@ public class NotFoundException : BusinessException
     }
     public static NotFoundException For<TEntity>()
     {
-        return new NotFoundException($"Entity {nameof(TEntity)} not found");
+        return new NotFoundException($"Entity {nameof(TEntity)} not found")
+        {
+            ErrorKind = ErrorKind.NotFound
+        };
     }
 }

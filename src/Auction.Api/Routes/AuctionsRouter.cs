@@ -1,6 +1,10 @@
 ﻿using System.Security.Claims;
+using Auction.Api.Dtos;
 using Auction.Application.Dtos;
 using Auction.Application.Mediator.Commands.Auctions;
+using Auction.Application.Mediator.Queries.Auctions;
+using Auction.Domain.Common;
+using Auction.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -12,37 +16,73 @@ public static class AuctionsRouter
     public static void MapAuctionsRoutes(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/",async (
-                [FromForm] IFormFile auctionAvatar,
-            [FromForm] CreateAuctionCommand command,
+            [FromBody] CreateAuctionDto dto,
             IMediator mediator, 
             HttpContext httpContext,
-            IMapper mapper,
             CancellationToken cancellationToken
-        ) =>
+            ) => 
         {
-            await using var fileStream = auctionAvatar.OpenReadStream();
-            
-            var file = new FileDto
-            {
-                Stream = fileStream,
-                ContentType = auctionAvatar.ContentType
-            };
-
             var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-           
-            var extendedCommand = mapper.Map<ExtendedCreateAuctionCommand>(command);
-            extendedCommand.UserId = Guid.Parse(userIdString);
-            extendedCommand.Avatar = file;
-                
-                
-            var auctionDto = await mediator.Send(extendedCommand, cancellationToken);
-            
-            return Results.Ok(new
+
+            if (userIdString is null)
             {
-                Auction = auctionDto,
-            });
-        })
-            .DisableAntiforgery()
+                return Results.Forbid();
+            }
+
+            var command = new CreateAuctionCommand
+            {
+                UserId = Guid.Parse(userIdString),
+                Description = dto.Description,
+                Lots = dto.Lots,
+                Title = dto.Title,
+            };
+            
+            var auctionDto = await mediator.Send(command, cancellationToken);
+            
+            return Results.Ok(auctionDto); 
+        }).RequireAuthorization();
+        
+        endpoints.MapGet("/{id:guid}", async (
+                [FromRoute] Guid id,
+                IMediator mediator, 
+                CancellationToken cancellationToken
+                ) => 
+            {
+                var query = new GetAuctionQuery
+                {
+                    Id = id
+                };
+                
+                var auctionDto = await mediator.Send(query, cancellationToken);
+            
+                return Results.Ok(auctionDto); 
+            })
+            .RequireAuthorization();
+        
+        endpoints.MapGet("/",async (
+                [FromQuery] AuctionState? state,
+                [FromQuery] string? title,
+                [FromQuery] int? page,
+                [FromQuery] int? pageSize,
+                IMediator mediator, 
+                CancellationToken cancellationToken
+            ) =>
+            {
+                var query = new GetAuctionsQuery
+                {
+                    State = state,
+                    Title = title,
+                    Pagination = new PaginationOptions
+                    {
+                        Page = page ?? PaginationOptions.DefaultPage,
+                        PageSize = pageSize ?? PaginationOptions.DefaultPageSize
+                    }
+                };
+                
+                var auctionsDtos = await mediator.Send(query, cancellationToken);
+            
+                return Results.Ok(auctionsDtos);
+            })
             .RequireAuthorization();
         
         endpoints.MapPatch("/{id}",async (
@@ -63,7 +103,6 @@ public static class AuctionsRouter
                     Auction = auctionDto,
                 });
             })
-            .DisableAntiforgery()
             .RequireAuthorization();
         
         endpoints.MapPost("/{id}/avatar",async (
@@ -72,12 +111,14 @@ public static class AuctionsRouter
                 IMediator mediator,   
                 HttpContext httpContext,
                 CancellationToken cancellationToken
-            ) =>
+            ) => 
             {
                 var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userIdString is null)
+                {
                     return Results.Forbid();
+                }
                 
                 await using var fileStream = avatar.OpenReadStream();
             

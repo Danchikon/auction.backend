@@ -2,9 +2,9 @@ using Auction.Application.Abstractions;
 using Auction.Application.Common.Mediator;
 using Auction.Application.Dtos;
 using Auction.Application.Mediator.Commands.Messages;
-using Auction.Application.Mediator.Commands.Users;
 using Auction.Domain.Common;
 using Auction.Domain.Entities;
+using Auction.Domain.Exceptions;
 using MapsterMapper;
 
 namespace Auction.Application.Mediator.CommandHandlers.Messages;
@@ -13,11 +13,19 @@ public class CreateMessageCommandHandler(
     IEventsPublisher eventsPublisher,
     IRepository<MessageEntity> messagesRepository,
     IRepository<UserEntity> usersRepository,
+    IRepository<AuctionEntity> auctionsRepository,
     IMapper mapper
     ) : CommandHandlerBase<CreateMessageCommand, MessageDto>
 {
     public override async Task<MessageDto> Handle(CreateMessageCommand command, CancellationToken cancellationToken = default)
     {
+        var anyAuction = await auctionsRepository.AnyAsync(auction => auction.Id == command.AuctionId, cancellationToken);
+
+        if (anyAuction is false)
+        {
+            throw NotFoundException.For<AuctionEntity>();
+        }
+        
         var userEntity = await usersRepository.SingleAsync(user => user.Id == command.UserId, cancellationToken);
         
         var messageId = Guid.NewGuid();
@@ -26,6 +34,7 @@ public class CreateMessageCommandHandler(
         var messageEntity = new MessageEntity
         {
             Id = messageId,
+            AuctionId = command.AuctionId,
             UserId = userEntity.Id,
             Text = command.Text,
             CreatedAt = messageCreatedAt
@@ -43,7 +52,7 @@ public class CreateMessageCommandHandler(
 
         var eventDto = new EventDto<MessageEventDataDto>
         {
-            Channel = "messages",
+            Channel = $"auctions.{command.AuctionId}.messages.sent",
             Data = messageEventData,
         };
 

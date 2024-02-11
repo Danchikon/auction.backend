@@ -1,4 +1,6 @@
+using System.Text.Json.Serialization;
 using Auction.Infrastructure.Options;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -8,6 +10,16 @@ public static class Api
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IWebHostEnvironment environment, IConfiguration configuration)
     {
+        services.ConfigureHttpJsonOptions(jsonOptions =>
+        {
+            jsonOptions.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+        
+        services.Configure<JsonOptions>(jsonOptions =>
+        {
+            jsonOptions.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+        
         if (environment.IsDevelopment())
         {
             services.AddEndpointsApiExplorer();
@@ -31,6 +43,7 @@ public static class Api
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey 
                 });
+                
                 swaggerGenOptions.AddSecurityRequirement(new OpenApiSecurityRequirement {
                     { 
                         new OpenApiSecurityScheme 

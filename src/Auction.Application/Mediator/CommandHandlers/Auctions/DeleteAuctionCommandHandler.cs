@@ -9,6 +9,6 @@ public class DeleteAuctionCommandHandler(IRepository<AuctionEntity> auctionRepos
 {
     public override async Task Handle(DeleteAuctionCommand command, CancellationToken cancellationToken = default)
     {
-        await auctionRepository.DeleteAsync(command.Id, cancellationToken);
+        await auctionRepository.DeleteAsync(auction => auction.Id == command.Id, cancellationToken);
     }
 }

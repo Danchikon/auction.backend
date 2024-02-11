@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Auction.Api.Dtos;
 using Auction.Application.Mediator.Commands.Messages;
 using Auction.Application.Mediator.Queries.Messages;
-using Auction.Infrastructure.Implementations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

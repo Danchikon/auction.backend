@@ -1,12 +1,13 @@
 using System.Linq.Expressions;
 using Auction.Domain.Common;
+using Auction.Domain.Common.Dtos;
 using Auction.Domain.Exceptions;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auction.Infrastructure.Implementations;
 
-public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IRepository<TEntity> where TDbContext: DbContext where TEntity : Entity<Guid>
+public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IRepository<TEntity> where TDbContext: DbContext where TEntity : class
 {
     public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -19,7 +20,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return entry.Entity;
     }
 
-    public virtual async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<ICollection<TEntity>> AddRangeAsync(ICollection<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await dbContext
             .Set<TEntity>()
@@ -41,11 +42,11 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return entry.Entity;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
     {
         await dbContext
             .Set<TEntity>()
-            .Where(entity => entity.Id == id)
+            .Where(filter)
             .ExecuteDeleteAsync(cancellationToken);
         
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -69,6 +70,47 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         return dtos;
     }
 
+    public virtual async Task<PaginatedListDto<TDto>> PaginateAsync<TDto>(
+        Expression<Func<TEntity, bool>> filter,
+        Expression<Func<TEntity, object>> sortBy,
+        PaginationOptions pagination,
+        CancellationToken cancellationToken = default
+        )
+    {
+        var queryable = dbContext
+            .Set<TEntity>()
+            .Where(filter);
+
+        var totalCount = await queryable.CountAsync(cancellationToken: cancellationToken);
+        
+        var items = await queryable
+            .OrderByDescending(sortBy)
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ProjectToType<TDto>()
+            .ToArrayAsync(cancellationToken);
+
+        return new PaginatedListDto<TDto>
+        {
+            TotalCount = totalCount,
+            Page = pagination.Page,
+            PageSize = pagination.PageSize,
+            Items = items
+        };
+    }
+
+    public async Task<bool> AnyAsync(
+        Expression<Func<TEntity, bool>> filter,
+        CancellationToken cancellationToken = default
+        )
+    {
+        var any = await dbContext
+            .Set<TEntity>()
+            .AnyAsync(filter, cancellationToken);
+
+        return any;
+    }
+
 
     public virtual async Task<TEntity> SingleAsync(
         Expression<Func<TEntity, bool>> filter,
@@ -77,7 +119,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
     {
         var entity = await dbContext
             .Set<TEntity>()
-            .SingleOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(filter, cancellationToken);
 
         if (entity is null)
         {
@@ -94,6 +136,7 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
     {
         var entityDto = await dbContext
             .Set<TEntity>()
+            .Where(filter)
             .ProjectToType<TDto>()
             .SingleOrDefaultAsync(cancellationToken);
 

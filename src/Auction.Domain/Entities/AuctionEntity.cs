@@ -8,9 +8,8 @@ public class AuctionEntity : Entity<Guid>
     public required string Title { get; set; }
     public string? Description { get; set; }
     public AuctionState State { get; set; }
-    public DateTimeOffset? OpensAt { get; set; }
-    public DateTimeOffset? OpenedAt { get; set; }
-    public DateTimeOffset? ClosedAt { get; set; }
+    public required DateTimeOffset OpensAt { get; set; }
+    public required DateTimeOffset ClosesAt { get; set; }
     public required Guid UserId { get; init; }
     public UserEntity? User { get; init; }
     public Uri? Avatar { get; set; }

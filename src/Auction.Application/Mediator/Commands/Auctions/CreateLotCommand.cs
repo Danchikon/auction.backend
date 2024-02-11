@@ -8,5 +8,6 @@ public record CreateLotCommand
     public string? Description { get; set; }
     public required decimal StartPrice { get; set; }
     public required decimal MinPriceStepSize { get; set; }
-    public required TimeSpan Duration { get; set; }
+    public required DateTimeOffset OpensAt { get; set; }
+    public required DateTimeOffset ClosesAt { get; set; }
 }

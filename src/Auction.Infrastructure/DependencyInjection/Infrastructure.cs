@@ -20,15 +20,20 @@ namespace Auction.Infrastructure.DependencyInjection;
 
 public static class Infrastructure
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddQuartzScheduling(configuration);
+        services.AddKeyedSingleton("lot_actions", new SemaphoreSlim(1));
+        services.AddSingleton<ILotJobsScheduler, LotJobsScheduler>();
+        
         services.AddMinioFilesStorage();
 
         services.AddScoped<IEventsPublisher, CentrifugoOutboxEventsPublisher<AuctionDbContext>>();
         services.AddScoped<IRepository<UserEntity>, EfRepository<UserEntity, AuctionDbContext>>();        
         services.AddScoped<IRepository<MessageEntity>, EfMessagesRepository>();
-        services.AddScoped<IRepository<AuctionEntity>, EfRepository<AuctionEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<AuctionEntity>, AuctionsRepository>();
         services.AddScoped<IRepository<LotEntity>, EfRepository<LotEntity, AuctionDbContext>>();
+        services.AddScoped<IRepository<BidEntity>, EfBidsRepository>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddJsonWebTokenService();

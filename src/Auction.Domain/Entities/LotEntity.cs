@@ -9,7 +9,8 @@ public class LotEntity : Entity<Guid>
     public string? Description { get; set; }
     public required decimal StartPrice { get; set; }
     public required decimal MinPriceStepSize { get; set; }
-    public required TimeSpan Duration { get; set; }
+    public required DateTimeOffset OpensAt { get; set; }
+    public required DateTimeOffset ClosesAt { get; set; }
     public required LotState State { get; set; }
     public IEnumerable<BidEntity> Bids { get; set; } = new List<BidEntity>();
 

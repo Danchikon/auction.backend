@@ -21,7 +21,9 @@ public static class LotsRouter
                 var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userIdString is null)
+                {
                     return Results.Forbid();
+                }
                 
                 await using var fileStream = avatar.OpenReadStream();
             
