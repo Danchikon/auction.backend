@@ -11,5 +11,8 @@ public class AuctionEntity : Entity<Guid>
     public DateTimeOffset? OpensAt { get; set; }
     public DateTimeOffset? OpenedAt { get; set; }
     public DateTimeOffset? ClosedAt { get; set; }
+    public required Guid UserId { get; init; }
+    public UserEntity? User { get; init; }
+    public Uri? Avatar { get; set; }
     public List<LotEntity> Lots { get; init; } = new ();
 }
