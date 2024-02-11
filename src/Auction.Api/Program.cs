@@ -17,7 +17,27 @@ builder.Host.ConfigureSerilog();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApi(builder.Environment, builder.Configuration);
-    
+
+builder.Services.AddCors(options =>
+{
+    var origin = builder.Configuration
+        .GetSection("CorsAllowed")
+        .GetSection("Origins")
+        .Get<string[]>();
+
+    if (origin != null && origin.Any())
+    {
+        options.AddDefaultPolicy(builder =>
+        {
+            builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithOrigins(origin)
+                .SetIsOriginAllowedToAllowWildcardSubdomains();
+        });
+    }
+});
+
 var app = builder.Build();
 
 await using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
