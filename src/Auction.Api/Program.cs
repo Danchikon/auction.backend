@@ -54,6 +54,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+#region Routing
+
 app
     .MapGroup("users")
     .MapUsersRoutes();
@@ -69,5 +71,11 @@ app
 app
     .MapGroup("auctions")
     .MapAuctionsRoutes();
+
+app
+    .MapGroup("lots")
+    .MapLotsRoutes();
+
+#endregion
 
 app.Run();

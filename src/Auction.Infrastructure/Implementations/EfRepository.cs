@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Auction.Infrastructure.Implementations;
 
-public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IRepository<TEntity> where TDbContext: DbContext where TEntity : class
+public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IRepository<TEntity> where TDbContext: DbContext where TEntity : Entity<Guid>
 {
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -39,6 +39,16 @@ public class EfRepository<TEntity, TDbContext>(TDbContext dbContext) : IReposito
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return entry.Entity;
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        await dbContext
+            .Set<TEntity>()
+            .Where(entity => entity.Id == id)
+            .ExecuteDeleteAsync(cancellationToken);
+        
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<TDto[]> WhereAsync<TDto>(
