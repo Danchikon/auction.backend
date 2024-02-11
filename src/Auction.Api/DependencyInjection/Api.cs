@@ -19,6 +19,8 @@ public static class Api
         {
             jsonOptions.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
+
+        services.AddCors();
         
         if (environment.IsDevelopment())
         {
