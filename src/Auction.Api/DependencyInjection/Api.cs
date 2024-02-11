@@ -13,6 +13,18 @@ public static class Api
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(swaggerGenOptions =>
             {
+                var swaggerOptions = configuration
+                    .GetSection(SwaggerOptions.Section)
+                    .Get<SwaggerOptions>()!;
+                
+                foreach (var serverUrl in swaggerOptions.ServersUrls)
+                {
+                    swaggerGenOptions.AddServer(new OpenApiServer
+                    {
+                        Url = serverUrl
+                    });
+                }
+                
                 swaggerGenOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
                     In = ParameterLocation.Header, 
                     Description = "Please insert JWT with Bearer into field",
