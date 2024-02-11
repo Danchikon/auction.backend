@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -5,7 +6,7 @@ namespace Auction.Infrastructure.Implementations;
 
 public class JsonWebTokenService(
     JsonWebTokenHandler tokenHandler,
-    SigningCredentials signingCredentials
+    [FromKeyedServices("jwt")] SigningCredentials signingCredentials
     )
 {
     public string Create(Dictionary<string, object>? claims = null)

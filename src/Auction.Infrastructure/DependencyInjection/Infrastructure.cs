@@ -68,7 +68,7 @@ public static class Infrastructure
             return jsonWebKey;
         });
         
-        services.AddSingleton<SigningCredentials>(provider =>
+        services.AddKeyedSingleton<SigningCredentials>("jwt", (provider, _) =>
         {
             var jsonWebKey = provider.GetRequiredService<JsonWebKey>();
             

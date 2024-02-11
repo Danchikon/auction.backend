@@ -25,7 +25,7 @@ public class CentrifugoOutboxEventsPublisher<TDbContext>(TDbContext dbContext) :
             Id = 0,
             Partition = 0,
             Method = "publish",
-            Payload = payload,
+            Payload = payload.ToJsonString(),
             CreatedAt = DateTimeOffset.UtcNow
         };
 
