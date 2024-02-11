@@ -48,7 +48,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(swaggerUiOptions =>
     {
-        swaggerUiOptions.RoutePrefix = app.Configuration.GetSection("Swagger").GetValue<string>("RoutePrefix");
+        var prefix = app.Configuration.GetSection("Swagger").GetValue<string>("RoutePrefix");
+        var swaggerEndpoint = string.IsNullOrEmpty(prefix)
+            ? "/swagger/v1/swagger.json"
+            : $"/{prefix}/swagger/v1/swagger.json";
+        
+        swaggerUiOptions.SwaggerEndpoint(swaggerEndpoint, string.Empty);
     });
 }
 
