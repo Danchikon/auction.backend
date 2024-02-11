@@ -46,7 +46,10 @@ app.UseSerilogRequestLogging();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(swaggerUiOptions =>
+    {
+        swaggerUiOptions.RoutePrefix = app.Configuration.GetSection("Swagger").GetValue<string>("RoutePrefix");
+    });
 }
 
 app.UseAuthentication();
