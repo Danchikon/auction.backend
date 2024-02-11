@@ -11,5 +11,11 @@ public class MessageEntityTypeConfiguration : IEntityTypeConfiguration<MessageEn
         builder
             .HasIndex(message => message.CreatedAt)
             .HasMethod("btree");
+
+        builder
+            .HasOne(message => message.User)
+            .WithMany(user => user.Messages)
+            .HasForeignKey(message => message.UserId)
+            .IsRequired();
     }
 }

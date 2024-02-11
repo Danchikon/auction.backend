@@ -10,6 +10,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auction.Infrastructure", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auction.Application", "src\Auction.Application\Auction.Application.csproj", "{4FF90447-6E2D-4122-BC78-9E1C8CFB85E4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{8B6D669B-078D-44B6-9CD3-34B4C7B6E7BF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		jwk.json = jwk.json
+		global.json = global.json
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

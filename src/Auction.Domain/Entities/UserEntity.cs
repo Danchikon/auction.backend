@@ -8,4 +8,5 @@ public class UserEntity : Entity<Guid>
     public required string Email { get; set; }
     public Uri? Avatar { get; set; }
     public required string PasswordHash { get; set; }
+    public List<MessageEntity> Messages { get; init; } = new();
 }

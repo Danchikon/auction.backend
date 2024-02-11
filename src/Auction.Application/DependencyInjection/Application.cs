@@ -1,4 +1,5 @@
 using System.Reflection;
+using Auction.Api.Configurations;
 using Auction.Application.Common.Mediator.PipelineBehaviours;
 using Auction.Application.Dtos;
 using Auction.Application.Mediator.Commands.Auctions;
@@ -26,7 +27,7 @@ public static class Application
         });
         
         services.AddMapster();
-        
+        Mapping.RegisterMappers();
         TypeAdapterConfig.GlobalSettings.Compiler = expression => expression.CompileFast();
         
         return services;

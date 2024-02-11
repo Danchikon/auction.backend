@@ -26,7 +26,7 @@ public class CreateMessageCommandHandler(
         var messageEntity = new MessageEntity
         {
             Id = messageId,
-            UserId = command.UserId,
+            UserId = userEntity.Id,
             Text = command.Text,
             CreatedAt = messageCreatedAt
         };
@@ -48,7 +48,7 @@ public class CreateMessageCommandHandler(
         };
 
         await eventsPublisher.PublishAsync(eventDto, cancellationToken);
-
+        
         var messageDto = mapper.Map<MessageDto>(updatedMessage);
 
         return messageDto;

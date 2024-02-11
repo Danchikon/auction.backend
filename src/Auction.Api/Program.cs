@@ -14,11 +14,9 @@ var builder = WebApplication.CreateSlimBuilder(args);
 builder.Host.ConfigureSerilog();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
-builder.Services.AddApi(builder.Environment);
+builder.Services.AddApi(builder.Environment, builder.Configuration);
     
 var app = builder.Build();
-
-Mapping.RegisterMappers();
 
 await using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
 var context = serviceScope.ServiceProvider.GetRequiredService<AuctionDbContext>();
@@ -56,19 +54,21 @@ app.UseAuthorization();
 
 #region Routing
 
-app
+var apiGroup = app.MapGroup("api");
+
+apiGroup
     .MapGroup("users")
     .MapUsersRoutes();
 
-app
+apiGroup
     .MapGroup("messages")
     .MapMessagesRoutes();
 
-app
+apiGroup
     .MapGroup("test")
     .MapTestRoutes();
 
-app
+apiGroup
     .MapGroup("auctions")
     .MapAuctionsRoutes();
 
