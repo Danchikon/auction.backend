@@ -15,4 +15,5 @@ public class LotEntity : Entity<Guid>
 
     public Guid AuctionId { get; set; }
     public AuctionEntity Auction { get; set; }
+    public Uri? Avatar { get; set; }
 }

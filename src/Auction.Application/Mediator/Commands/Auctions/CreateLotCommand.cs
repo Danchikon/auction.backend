@@ -9,5 +9,4 @@ public record CreateLotCommand
     public required decimal StartPrice { get; set; }
     public required decimal MinPriceStepSize { get; set; }
     public required TimeSpan Duration { get; set; }
-    public required LotState State { get; set; }
 }

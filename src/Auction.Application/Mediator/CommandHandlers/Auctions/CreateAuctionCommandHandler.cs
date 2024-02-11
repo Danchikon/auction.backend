@@ -1,4 +1,5 @@
-﻿using Auction.Application.Common.Mediator;
+﻿using Auction.Application.Abstractions;
+using Auction.Application.Common.Mediator;
 using Auction.Application.Dtos;
 using Auction.Application.Mediator.Commands.Auctions;
 using Auction.Domain.Common;
@@ -8,12 +9,20 @@ using MapsterMapper;
 
 namespace Auction.Application.Mediator.CommandHandlers.Auctions;
 
-public class CreateAuctionCommandHandler(IMapper maper, IUnitOfWork unitOfWork, IRepository<AuctionEntity> auctionRepository, IRepository<LotEntity> lotepository)
-    : CommandHandlerBase<CreateAuctionCommand, AuctionDto>
+public class CreateAuctionCommandHandler(
+    IMapper maper, 
+    IRepository<AuctionEntity> auctionRepository,
+    IRepository<LotEntity> lotepository,
+    IFilesStorage filesStorage
+    )
+    : CommandHandlerBase<ExtendedCreateAuctionCommand, AuctionDto>
 {
-    public override async Task<AuctionDto> Handle(CreateAuctionCommand command, CancellationToken cancellationToken = default)
+    public override async Task<AuctionDto> Handle(ExtendedCreateAuctionCommand command, CancellationToken cancellationToken = default)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
+        var auctionEntityId = Guid.NewGuid();
+        var fileName = auctionEntityId.ToString();
+        
+        var avatarUri = await filesStorage.UploadAsync(command.Avatar, "avatars", fileName, cancellationToken);
 
         var createdLots = Enumerable.Empty<LotEntity>();
         
@@ -26,7 +35,9 @@ public class CreateAuctionCommandHandler(IMapper maper, IUnitOfWork unitOfWork, 
             CreatedAt = DateTimeOffset.UtcNow,
             ClosedAt = command.ClosedAt,
             OpensAt = command.OpensAt,
-            OpenedAt = command.OpenedAt
+            OpenedAt = command.OpenedAt,
+            UserId = command.UserId,
+            Avatar = avatarUri
         };
         
         var createdAuction = await auctionRepository.AddAsync(auctionEntity, cancellationToken);
@@ -57,8 +68,6 @@ public class CreateAuctionCommandHandler(IMapper maper, IUnitOfWork unitOfWork, 
             auctionDto.Lots =  maper.Map<IEnumerable<LotDto>>(createdLots);
         }
         
-        await unitOfWork.CommitTransactionAsync(cancellationToken);
-
         return auctionDto;
     }
 }
